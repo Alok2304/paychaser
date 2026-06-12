@@ -1,0 +1,51 @@
+# Cline Operational Rules & Core Engineering Guardrails
+
+You must strictly adhere to these architectural design rules, file structures, and code style protocols for all tasks inside this workspace.
+
+---
+
+## 1. Zero-Cost Infrastructure & Tech Stack Constraints
+
+- **Framework:** Next.js (App Router, Server Actions, TypeScript). Always prioritize Server Actions over building traditional `/api/` routing unless explicitly required (like Stripe Webhooks).
+- **Styling:** Tailwind CSS using components configured from `shadcn/ui`. Do not invent raw styles when a utility class or design primitive exists.
+- **Database:** PostgreSQL accessed exclusively via Prisma ORM.
+- **Authentication:** Clerk Auth API. Never attempt to code a custom session manager, JWT encoder, or bcrypt password-hashing pipeline.
+- **Mailing Engine:** Resend API for transactional message deliveries.
+- **Payments:** Stripe Node.js SDK for Checkout Sessions and Webhook handling.
+
+---
+
+## 2. Code Execution & Architectural Standards
+
+### 🪙 Currency & Financial Data Rule
+
+- **CRITICAL:** Never use JavaScript floating-point numbers (`number` types with decimals like `19.99`) to manage monetary math.
+- All financial balances, item costs, and taxes must be parsed, computed, and written to the database strictly as **integers representing the lowest currency subunit** (e.g., Cents for USD, Paise for INR). `$15.50` must be treated mathematically and stored as `1550`.
+
+### 🛑 No Placeholder Code ("Anti-Lazy" Policy)
+
+- Do not emit code blocks containing comments like `// TODO: Implement later`, `// ... rest of code`, or empty code shells.
+- Every function, component, layout, and database call you write must be completely written out, structurally intact, and immediately ready to compile.
+
+### 🧱 Error Handling & TypeScript Integrity
+
+- Keep TypeScript in `strict` mode. Avoid utilizing `any` under all circumstances. Explicitly type function parameters, hook responses, and object payloads.
+- Wrap data mutation processes, Stripe handshakes, and third-party network fetches inside robust `try/catch` enclosures. Log explicit diagnostic telemetry errors gracefully.
+
+---
+
+## 3. Workflow & File Manipulation Protocols
+
+### 📂 Read Before You Write
+
+- Before engineering a new file or rewriting an existing block, actively scan related folder trees (e.g., look at existing Prisma schemas, interface schemas, or layout templates) to guarantee deep architectural alignment.
+- Prevent duplicate asset declarations. Leverage existing utility helpers or UI atomic primitives.
+
+### 🔄 Incremental Progress Validation
+
+- Execute modifications in small, logically bounded steps.
+- After executing a significant layout architecture change, database model synchronization, or API schema revision, verify code integrity by executing local project compilation tools (`npm run build` or `npx tsc`) via terminal interaction to intercept Type errors early.
+
+### 📝 State Management Preservation
+
+- Respect and maintain the core `AGENTS.md` progress tracker matrix. Update its phase checkboxes upon the completion of development modules so the system maintains a running log of what features have successfully shipped.
